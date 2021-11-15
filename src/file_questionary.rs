@@ -87,7 +87,9 @@ pub fn ask(question: &str) -> String {
     std::io::stdout().flush();
     println!("{}", question);
     let _ = std::io::stdin().read_line(&mut res).unwrap();
-    res.pop();
+    while res.as_bytes().last().unwrap_or(&255) > &31 {
+        res.pop();
+    }
     res
 }
 #[derive(Debug)]
