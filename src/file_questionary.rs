@@ -48,7 +48,7 @@ pub fn start_questionary(attrs: Vec<&str>, file: &str) -> BuildHandle {
             color,
         });
         if ask("Range (y/n)").eq("y") {
-            let range_data = ask("Give parameters => Format 'time_max,time_min'");
+            let range_data = ask("Give parameters => Format 'time_min,time_max'");
             let extracted_range_data = range_data.split_once(",").unwrap_or(("", ""));
             file_config.range = Some(
                 extracted_range_data.0.parse::<i64>().unwrap_or(0)
