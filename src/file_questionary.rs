@@ -1,4 +1,3 @@
-use crate::file_questionary::ConfigOption::{RADIUS, RESPONSIVE};
 use crate::file_questionary::DataSetOption::{FILL, ORDER, TENSION};
 use rand::*;
 use std::borrow::Borrow;
@@ -21,13 +20,6 @@ pub fn start_questionary(attrs: Vec<&str>, file: &str) -> BuildHandle {
 
         let color = Color::from(ask("Choose a color for your graph help https://www.google.com/search?client=firefox-b-d&q=Hex+color+picker . Format 'R,G,B'"));
 
-        let configs = until_question(
-            &format!(
-                "Config options are {}. Format type lowercase => type=VALUE",
-                ConfigOption::list_items()
-            ),
-            "Do you want to choose a config setting (y/n)",
-        );
         let data_configs = until_question(
             &format!(
                 "Data config options are {}. Format type lowercase => type=VALUE",
@@ -42,10 +34,6 @@ pub fn start_questionary(attrs: Vec<&str>, file: &str) -> BuildHandle {
         }
 
         graphs.push(Graph {
-            config: configs
-                .iter()
-                .map(|raw| ConfigOption::from(raw.clone()))
-                .collect(),
             style: graph_style,
             data_config: data_configs
                 .iter()
@@ -108,7 +96,6 @@ pub struct BuildHandle {
 pub struct Graph {
     pub eq: Option<String>,
     pub color: Color,
-    pub config: Vec<ConfigOption>,
     pub data_config: Vec<DataSetOption>,
     pub style: GraphStyle,
 }
@@ -126,7 +113,6 @@ impl Default for Graph {
         Graph {
             eq: None,
             color: Color::default(),
-            config: [ConfigOption::RADIUS(0.0), ConfigOption::RESPONSIVE(true)].to_vec(),
             data_config: Vec::new(),
             style: GraphStyle::LINE,
         }
@@ -272,54 +258,6 @@ impl Into<String> for DataSetOption {
             }
             DataSetOption::ORDER(order) => {
                 format!("order : {} ", order)
-            }
-        }
-    }
-}
-#[derive(Clone, Debug)]
-pub enum ConfigOption {
-    RADIUS(f64),
-    RESPONSIVE(bool),
-}
-
-impl From<String> for ConfigOption {
-    fn from(string: String) -> Self {
-        match string {
-            str if str.starts_with("radius") => RADIUS(
-                str.split_once("=")
-                    .unwrap_or(("", ""))
-                    .1
-                    .parse::<f64>()
-                    .unwrap_or(0.0),
-            ),
-            str if str.starts_with("responsive") => RESPONSIVE(
-                str.split_once("=")
-                    .unwrap_or(("", ""))
-                    .1
-                    .parse::<bool>()
-                    .unwrap_or(false),
-            ),
-            _ => RESPONSIVE(false),
-        }
-    }
-}
-
-impl SumEnum for ConfigOption {
-    fn list_items() -> String {
-        "RADIUS(Rational),
-        RESPONSIVE(Boolean),"
-            .to_owned()
-    }
-}
-
-impl Into<String> for ConfigOption {
-    fn into(self) -> String {
-        match self {
-            ConfigOption::RADIUS(rad) => {
-                format!("radius : {}", rad)
-            }
-            ConfigOption::RESPONSIVE(res) => {
-                format!("responsive : {}", res.to_string())
             }
         }
     }
