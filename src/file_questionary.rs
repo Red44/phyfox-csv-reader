@@ -35,6 +35,11 @@ pub fn start_questionary(attrs: Vec<&str>, file: &str) -> BuildHandle {
             ),
             "Do you want to choose a data config setting (y/n)",
         );
+        let mut eq = None;
+        if ask("Equation (y/n)").eq("y") {
+            let equation = ask("A equation is going to manipulate the data ex. =>  x*5'");
+            eq = Some(equation);
+        }
 
         graphs.push(Graph {
             config: configs
@@ -47,6 +52,7 @@ pub fn start_questionary(attrs: Vec<&str>, file: &str) -> BuildHandle {
                 .map(|raw| DataSetOption::from(raw.clone()))
                 .collect(),
             color,
+            eq,
         });
         if ask("Range (y/n)").eq("y") {
             let range_data = ask("Give parameters => Format 'time_min,time_max'");
@@ -100,15 +106,25 @@ pub struct BuildHandle {
 }
 #[derive(Debug)]
 pub struct Graph {
+    pub eq: Option<String>,
     pub color: Color,
     pub config: Vec<ConfigOption>,
     pub data_config: Vec<DataSetOption>,
     pub style: GraphStyle,
 }
 
+impl Graph {
+    pub fn data_adapter(&self, data: &Vec<f64>) -> Vec<f64> {
+        let expr: meval::Expr = self.eq.clone().unwrap_or("x".to_owned()).parse().unwrap();
+        let func = expr.bind("x").unwrap();
+        data.iter().map(|data| func(*data)).collect()
+    }
+}
+
 impl Default for Graph {
     fn default() -> Self {
         Graph {
+            eq: None,
             color: Color::default(),
             config: [ConfigOption::RADIUS(0.0), ConfigOption::RESPONSIVE(true)].to_vec(),
             data_config: Vec::new(),
