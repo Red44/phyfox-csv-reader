@@ -41,6 +41,9 @@ fn main() {
         );
         let mut file_data = file_parser::extract_data(&file_contents.1);
         file_data = build_handle.config.data_adapter(file_data);
+        for (p, v) in build_handle.nodes.iter().enumerate() {
+            file_data[p + 1] = v.data_adapter(&file_data[p + 1]);
+        }
         let page = html_file_parser::buid_html_page_str(file_data, file_attrs, build_handle);
         fs::write(
             format!("{}.html", file_contents.0.unwrap().to_str().unwrap()),

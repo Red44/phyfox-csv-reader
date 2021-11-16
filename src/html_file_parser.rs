@@ -22,13 +22,6 @@ fn append_data(page: &mut String, attrs: Vec<&str>, data: &Vec<Vec<f64>>, handle
         add_type(page, "borderColor", &color);
         let r#type: String = node.style.clone().into();
         add_type(page, "type", &format!("\"{}\"", &r#type));
-        page.push_str("options : {");
-        for conf in node.config.iter() {
-            let parsed_conf: String = conf.clone().into();
-            page.push_str(&parsed_conf);
-            page.push(',')
-        }
-        page.push_str("},");
 
         for conf in node.data_config.iter() {
             let parsed_conf: String = conf.clone().into();
