@@ -1,5 +1,6 @@
 use crate::file_questionary::ConfigOption::{RADIUS, RESPONSIVE};
 use crate::file_questionary::DataSetOption::{FILL, ORDER, TENSION};
+use rand::*;
 use std::borrow::Borrow;
 use std::io::{Read, Write};
 use std::ops::{Add, Range};
@@ -87,7 +88,7 @@ pub fn ask(question: &str) -> String {
     std::io::stdout().flush();
     println!("{}", question);
     let _ = std::io::stdin().read_line(&mut res).unwrap();
-    while res.as_bytes().last().unwrap_or(&255) > &31 {
+    while res.as_bytes().last().unwrap_or(&255) < &31 {
         res.pop();
     }
     res
@@ -108,7 +109,7 @@ pub struct Graph {
 impl Default for Graph {
     fn default() -> Self {
         Graph {
-            color: Color(255, 0, 0),
+            color: Color::default(),
             config: [ConfigOption::RADIUS(0.0), ConfigOption::RESPONSIVE(true)].to_vec(),
             data_config: Vec::new(),
             style: GraphStyle::LINE,
@@ -121,6 +122,11 @@ pub struct Color(pub u8, pub u8, pub u8);
 impl Into<String> for Color {
     fn into(self) -> String {
         format!("'rgb({},{},{})'", self.0, self.1, self.2)
+    }
+}
+impl Default for Color {
+    fn default() -> Self {
+        Color(rand::random(), rand::random(), rand::random())
     }
 }
 impl From<String> for Color {
