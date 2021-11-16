@@ -19,7 +19,7 @@ pub fn start_questionary(attrs: Vec<&str>, file: &str) -> BuildHandle {
             GraphStyle::list_items()
         )));
 
-        let color = Color::from(ask("Choose a color for your graph. Format 'R,G,B'"));
+        let color = Color::from(ask("Choose a color for your graph help https://www.google.com/search?client=firefox-b-d&q=Hex+color+picker . Format 'R,G,B'"));
 
         let configs = until_question(
             &format!(
